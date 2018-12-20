@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StorePageList"
+    android:orientation="vertical"
+    android:weightSum="10"
+    android:background="#ffffff"
+    >
+
+    <ImageView
+        android:id="@+id/nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/nav" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:layout_weight="1"
+        android:layout_marginTop="-4dp"
+        >
+
+        <ImageButton
+            android:id="@+id/hospital"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:maxHeight="67dp"
+            android:maxWidth="88dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/hospital_off"
+            android:layout_weight="1"
+            android:background="@drawable/storepageicon_off"
+            />
+
+        <ImageButton
+            android:id="@+id/drugstore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:maxHeight="67dp"
+            android:maxWidth="88dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/drugstore_off"
+            android:background="@drawable/storepageicon_off"
+            />
+
+        <ImageButton
+            android:id="@+id/beautysalon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:maxHeight="67dp"
+            android:maxWidth="88dp"
+            android:src="@drawable/beautysalon_off"
+            android:background="@drawable/storepageicon_off"
+            />
+
+        <ImageButton
+            android:id="@+id/restaurant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:maxHeight="67dp"
+            android:maxWidth="88dp"
+            android:scaleType="centerInside"
+            android:layout_weight="1"
+            android:src="@drawable/restaurant_off"
+            android:background="@drawable/storepageicon_off"
+            />
+    </LinearLayout>
+
+    <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#ffffff"
+
+        >
+        <fragment
+            android:id="@+id/fragment_container"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:visibility="gone">
+        </fragment>
+    </FrameLayout>
+
+</LinearLayout>

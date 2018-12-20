@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<html>
+<head>
+    <title>seoul</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<link rel="stylesheet" href="set.css">-->
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script language="JavaScript" src="file:///android_asset/www/imageMapResizer.min.js"></script>
+    <script language="JavaScript">
+        function sendMessage(msg){
+		    window.connect.setGu(msg);
+        }
+    </script>
+    <style>
+        img[usemap] {
+            max-width: 100%; /* 이미지의 최대사이즈 */
+            width /***/: auto; /* IE8 */
+            height: auto;
+        }
+    </style>
+</head>
+
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+<!--<div class="pcImg"> -->
+<img id = "seoul" src="seoul.png" width="100%" usemap="#seoul_Map" >
+
+
+<map id="seoul_Map" name="seoul_Map">
+    <area shape="rect" alt="노원구" id="area0" coords="682,19,847,262" onclick="sendMessage('노원구')"  >
+    <area shape="rect" alt="도봉구" id="area1" coords="592,3,699,204" onclick="sendMessage('도봉구')" >
+    <area shape="rect" alt="강북구" id="area2" coords="530,48,696,270" onclick="sendMessage('강북구')" >
+    <area shape="rect" alt="강동구" id="area3" coords="854,370,1027,547" onclick="sendMessage('강동구')" >
+    <area shape="rect" alt="중랑구" id="area4" coords="746,239,865,399" onclick="sendMessage('중랑구')" >
+    <area shape="rect" alt="광진구" id="area5" coords="714,396,863,530" onclick="sendMessage('광진구')" >
+    <area shape="rect" alt="동대문구" id="area6" coords="629,296,775,427" onclick="sendMessage('동대문구')" >
+    <area shape="rect" alt="성북구" id="area7" coords="516,196,749,365" onclick="sendMessage('성북구')" >
+    <area shape="rect" alt="성동구" id="area8" coords="594,390,750,517" onclick="sendMessage('성동구')" >
+    <area shape="rect" alt="종로구" id="area9" coords="459,209,629,398" onclick="sendMessage('종로구')" >
+    <area shape="rect" alt="은평구" id="area10" coords="311,131,503,369" onclick="sendMessage('은평구')" >
+    <area shape="rect" alt="서대문구" id="area11" coords="341,273,495,433" onclick="sendMessage('서대문구')" >
+    <area shape="rect" alt="중구" id="area12" coords="487,394,627,469" onclick="sendMessage('중구')" >
+    <area shape="rect" alt="용산구" id="area13" coords="449,440,604,565" onclick="sendMessage('용산구')" >
+    <area shape="rect" alt="마포구" id="area14" coords="235,332,496,511" onclick="sendMessage('마포구')" >
+    <area shape="rect" alt="송파구" id="area15" coords="732,480,965,707" onclick="sendMessage('송파구')" >
+    <area shape="rect" alt="강남구" id="area16" coords="608,508,867,729" onclick="sendMessage('강남구')" >
+    <area shape="rect" alt="서초구" id="area17" coords="519,527,806,820" onclick="sendMessage('서초구')" >
+    <area shape="rect" alt="동작구" id="area18" coords="355,533,530,669" onclick="sendMessage('동작구')" >
+    <area shape="rect" alt="관악구" id="area19" coords="345,615,538,794" onclick="sendMessage('관악구')" >
+    <area shape="rect" alt="금천구" id="area20" coords="274,641,417,799" onclick="sendMessage('금천구')" >
+    <area shape="rect" alt="영등포구" id="area21" coords="284,469,435,636" onclick="sendMessage('영등포구')" >
+    <area shape="rect" alt="구로구" id="area22" coords="119,559,351,689" onclick="sendMessage('구로구')" >
+    <area shape="rect" alt="양천구" id="area23" coords="140,460,311,590" onclick="sendMessage('양천구')" >
+    <area shape="rect" alt="강서구" id="area24" coords="6,303,292,517" onclick="sendMessage('강서구')" >
+</map>
+
+
+<!--</div> -->
+<script language="JavaScript">
+        $(document).ready(function(){
+		  $('map').imageMapResize();
+        });
+</script>
+<!---->
+<!--function sendMessage(i) {-->
+<!--var x = document.getElementById("seoul_Map");-->
+<!--var txt = ""; -->
+<!--txt = x.areas[i].alt;-->
+<!--//sendMessage(txt);-->
+<!--}-->
+<!--//    for(j = 0; j < txt.length; j++){-->
+<!--//        document.write(txt[i] + "<br>");-->
+<!--//    }-->
+<!---->
+<!--</script>-->
+
+
+</body>
+</html>

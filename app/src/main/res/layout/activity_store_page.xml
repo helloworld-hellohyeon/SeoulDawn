@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StorePage"
+    android:orientation="vertical"
+    android:background="@drawable/storepage_background"
+    >
+
+    <ImageView
+        android:id="@+id/nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/nav" />
+
+        <WebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nav"
+            app:layout_constraintBottom_toTopOf="@id/select_area"
+            />
+
+        <ImageView
+            android:id="@+id/select_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:padding="2dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="22dp"
+            android:maxWidth="467dp"
+            android:src="@drawable/storepage_selectarea"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/webview"
+            />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <!--<Button-->
+            <!--android:id="@+id/btn"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Hey"-->
+            <!--android:gravity="bottom"-->
+            <!--android:orientation="horizontal" >-->
+        <!--</Button>-->
+
+
+
+
+
+
+
+
