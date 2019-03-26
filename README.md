@@ -1,4 +1,4 @@
-# SeoulDawn
+# 🌙SeoulDawn⭐
 with team 'The Owls', @ccy5906, @swest30, @subsubin, @wanderer00
 
 #### This app is about services that we can use in dawn in Seoul. It is designed for Seoul App Contest. (https://mplatform.seoul.go.kr/w/contest/award/2018/nominee/selectNominee.do) <br> We use bus information API, Google Geo API and firebase for DB.
