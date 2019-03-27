@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
                 busTypeN = (TrafficBusButtonTypeN) findViewById(R.id.dawnbus);
                 busTypeN.setOpenAPIKey(busKey);
 
