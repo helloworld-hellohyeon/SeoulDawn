@@ -64,4 +64,9 @@ public class StorePage extends AppCompatActivity{
             startActivity(intent);
         }
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

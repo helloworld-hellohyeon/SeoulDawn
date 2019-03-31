@@ -39,10 +39,10 @@ public class Restaurant extends Fragment {
     int con,ex;
     String numm;
     DatabaseReference Ddname;
-    String guname,category,tell="",timee,address,check="",check2="";
+    String guname,category,tell="",timee,address,check="",check2="",name;
     ImageButton left,right;
-
-    ArrayAdapter<String> adapter;
+    ListViewAdapter adapter;
+    ListView listview;
     ArrayList<String> LIST_Hair = new ArrayList<String>();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     DatabaseReference Gangnam;
@@ -57,8 +57,6 @@ public class Restaurant extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.activity_hospital, container, false);
         database = FirebaseDatabase.getInstance();
-        left=(ImageButton)view.findViewById(R.id.btn_left);
-        right=(ImageButton)view.findViewById(R.id.btn_right);
 
         Bundle extra = getArguments();
         guname = extra.getString("guname");
@@ -68,27 +66,19 @@ public class Restaurant extends Fragment {
         Gangnam = mDatabase.child(guname).child(category);
 
 
-        ListView listview = (ListView)view.findViewById(R.id.view2);
-        adapter = new ArrayAdapter<String>(getContext() ,android.R.layout.simple_list_item_1,LIST_Hair);
+        listview = (ListView)view.findViewById(R.id.view2);
+        adapter = new ListViewAdapter() ;
+
+        listview.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(itemHandler);
 
-        left.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity root = getActivity();
-                first=first-200;
-                if(first<0) {
-                    Toast.makeText(root, "이전으로 돌아갈 수 없습니다.", Toast.LENGTH_LONG).show();
-                    first=first+200;
-                }else{
-                    list_count--;
-                    intent_count--;
-                    Data(first, first);
-                }
-            }
-        });
+        View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false) ;
+        right=(ImageButton)footer.findViewById(R.id.btn_right);
+
+        listview.addFooterView(footer);
+
         right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,7 +93,7 @@ public class Restaurant extends Fragment {
                     }else {
                         list_count++;
                         intent_count++;
-                        first = first + 200;
+                        first = first + 10;
                         Data(first, first);
                     }
                 }
@@ -129,15 +119,15 @@ public class Restaurant extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        Data(intent_count*200,intent_count*200);
-        this.first=intent_count*200;
+        Data(intent_count*5,intent_count*5);
+        this.first=intent_count*5;
     }//onStart
 
 
     void Data(int first,int last) {
         this.first=first;
         this.last=last;
-        last=last+200;
+        last=last+5;
         check="";
         check2="";
         for (first = first; first<last; first++) {
@@ -177,6 +167,12 @@ public class Restaurant extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     address=dataSnapshot.getValue(String.class);
+
+                    if(address.contains("(")){
+                        address = address.substring(0, address.indexOf("(")-1) + "\n" + address.substring(address.indexOf("("));
+
+                    }
+
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {              }
@@ -185,11 +181,14 @@ public class Restaurant extends Fragment {
             Dname.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    String name = dataSnapshot.getValue(String.class);
+                    name = dataSnapshot.getValue(String.class);
                     Log.d("GangNamGu", "Value is " + name);
                     if(name != null){
-                        LIST_Hair.add(name +"\n\n"+timee+"\n"+tell+"\n"+address);
+                        LIST_Hair.add(name +"\n\n"+address);
+                        adapter.addItem(name,address);
                         adapter.notifyDataSetChanged();
+
+
                     }
                     else {
                         check="no";
