@@ -127,7 +127,7 @@ public class DrugStore extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             position = position+(list_count*200);
-            Intent intent = new Intent(getContext(), Detail.class); //getApplicationContext()
+            Intent intent = new Intent(getContext(), Detail.class); //getApplicationContext()=
             intent.putExtra("guname",guname);
             intent.putExtra("category",category);
             intent.putExtra("count",position);
