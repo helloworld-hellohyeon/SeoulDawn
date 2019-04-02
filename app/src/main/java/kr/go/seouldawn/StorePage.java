@@ -30,10 +30,14 @@ public class StorePage extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store_page);
 
+        //mWebView  : 서울시 구 지도 뷰
+
         mWebView = (WebView) findViewById(R.id.webview);
         mWebView.setBackgroundColor(0);
+        // Zoom 가능
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setSupportZoom(true);
+
 
         mWebView.setWebViewClient(new WebViewClient());
   //      mWebView.setWebViewClient(new WebViewClient());
