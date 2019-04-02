@@ -50,7 +50,7 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
 
     DatabaseReference data;
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-
+    String inOnMapAddress;
 
     private GoogleMap mMap;
     public Geocoder geocoder = new Geocoder(this);
@@ -298,15 +298,17 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
     //현수코드
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        DatabaseReference inOnMap = data.child("address");
         mMap = googleMap;
         geocoder = new Geocoder(this);
-        ////////////////////
 
-        button.setOnClickListener(new Button.OnClickListener() {
+        inOnMap.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                String str = address; //mConditionRef;//"신도림";//editText.getText().toString();
+                inOnMapAddress = dataSnapshot.getValue(String.class);
+
+                String str = inOnMapAddress; //mConditionRef;//"신도림";//editText.getText().toString();
                 //Log.e("next", address);
                 List<Address> addressList = null;
                 try {
@@ -355,16 +357,12 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
                 // 해당 좌표로 화면 줌
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 18));
 //                mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
-            } //onClick
-        }); //button onClickListener
+            }
 
-        LatLng seoul = new LatLng(37.6, 127.0);
-        MarkerOptions mOptions3 = new MarkerOptions();
-        mOptions3.title("search result");
-        mOptions3.position(seoul);
-
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 10));
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        }); //inOnMap.addValueEventListener
     } //onMapReady
 
     @Override
