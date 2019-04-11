@@ -40,14 +40,12 @@ public class DrugStore extends Fragment {
 
 
     int i=0,j=0,first,last,list_count=0,intent_count=0;
-    String guname="",category,tell,timee,address,check="",check2="";
+    String guname="",category,tell,timee,address,check="",check2="",name;
     ImageButton left,right;
     ListView listview;
     String numm;
     DatabaseReference Ddname;
-
-
-    ArrayAdapter<String> adapter,adapter1;
+    ListViewAdapter adapter;
     ArrayList<String> LIST = new ArrayList<String>();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     DatabaseReference Gangnam;
@@ -64,8 +62,7 @@ public class DrugStore extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.activity_hospital, container, false);
-        left=(ImageButton)view.findViewById(R.id.btn_left);
-        right=(ImageButton)view.findViewById(R.id.btn_right);
+
 
         Bundle extra = getArguments();
         guname = extra.getString("guname");
@@ -75,28 +72,17 @@ public class DrugStore extends Fragment {
         Gangnam = mDatabase.child(guname).child(category);
 
         listview = (ListView)view.findViewById(R.id.view2);
-        adapter = new ArrayAdapter<String>(getContext() , android.R.layout.simple_list_item_1, LIST);
-        adapter.notifyDataSetChanged();
+        adapter = new ListViewAdapter() ;
+
         listview.setAdapter(adapter);
-        listview.setOnItemClickListener(itemHandler);
+        adapter.notifyDataSetChanged();
+        listview.setOnItemClickListener(itemHandler);;
+
+        View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false) ;
+        right=(ImageButton)footer.findViewById(R.id.btn_right);
+        listview.addFooterView(footer);
 
 
-
-        left.setOnClickListener(new View.OnClickListener() {
-            Activity root = getActivity();
-            @Override
-            public void onClick(View v) {
-                first=first-200;
-                if(first<0) {
-                    Toast.makeText(root, "이전으로 돌아갈 수 없습니다.", Toast.LENGTH_LONG).show();
-                    first=first+200;
-                }else{
-                    list_count--;
-                    intent_count--;
-                    Data(first, first);
-                }
-            }
-        });
         right.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -113,7 +99,7 @@ public class DrugStore extends Fragment {
                     }else {
                         list_count++;
                         intent_count++;
-                        first = first + 200;
+                        first = first + 5;
                         Data(first, first);
                     }
                 }
@@ -126,8 +112,8 @@ public class DrugStore extends Fragment {
     AdapterView.OnItemClickListener itemHandler=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            position = position+(list_count*200);
-            Intent intent = new Intent(getContext(), Detail.class); //getApplicationContext()=
+            position = position+(list_count*5);
+            Intent intent = new Intent(getContext(), Detail.class); //getApplicationContext()
             intent.putExtra("guname",guname);
             intent.putExtra("category",category);
             intent.putExtra("count",position);
@@ -139,15 +125,15 @@ public class DrugStore extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Data(intent_count*200,intent_count*200);
-        this.first=intent_count*200;
+        Data(intent_count*5,intent_count*5);
+        this.first=intent_count*5;
     }//onStart
 
 
     void Data(int first,int last) {
         this.first=first;
         this.last=last;
-        last=last+200;
+        last=last+5;
         check="";
         check2="";
         for (first = first; first<last; first++) {
@@ -156,22 +142,13 @@ public class DrugStore extends Fragment {
             String num = String.valueOf(first);
             numm = String.valueOf(first+1);
             Dname = Gangnam.child(num).child("name");
-            tel = Gangnam.child(num).child("tel");
             time = Gangnam.child(num).child("monday");
             addr=Gangnam.child(num).child("address");
 
             LIST.clear();
-            adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged(); 
 
-            tel.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    tell=dataSnapshot.getValue(String.class);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-            });
-            // if(tell.) break;
+
 
             time.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -186,6 +163,10 @@ public class DrugStore extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     address=dataSnapshot.getValue(String.class);
+                    if(address.contains("(")){
+                        address = address.substring(0, address.indexOf("(")-1) + "\n" + address.substring(address.indexOf("("));
+
+                    }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {              }
@@ -194,10 +175,11 @@ public class DrugStore extends Fragment {
             Dname.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    String name = dataSnapshot.getValue(String.class);
+                    name = dataSnapshot.getValue(String.class);
                     Log.d("GangNamGu", "Value is " + name);
                     if(name != null){
-                        LIST.add(name +"\n\n"+timee+"\n"+tell+"\n"+address);
+                        LIST.add(name +"\n\n"+address);
+                        adapter.addItem(name,address);
                         adapter.notifyDataSetChanged();
                     }
                     else {

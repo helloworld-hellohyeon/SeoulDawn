@@ -1,8 +1,10 @@
 package kr.go.seouldawn;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -11,14 +13,18 @@ import android.widget.ImageButton;
 import java.util.ArrayList;
 
 
+
+
 public class StorePageList extends AppCompatActivity implements View.OnClickListener{
     ImageButton hospital, drugstore, beautysalon,restaurant;
-
+    public static Context context;
     private final int FRAGMENT1 = 1;
     private final int FRAGMENT2 = 2;
     private final int FRAGMENT3 = 3;
     private final int FRAGMENT4 = 4;
-
+    int num = 1;
+    FragmentManager fm;
+    FragmentTransaction transaction;
     String guname="";
     ArrayList<String> ArrData = new ArrayList<>();
 
@@ -26,6 +32,7 @@ public class StorePageList extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store_page_list);
+
 
 
         hospital = findViewById(R.id.hospital);
@@ -38,10 +45,13 @@ public class StorePageList extends AppCompatActivity implements View.OnClickList
         beautysalon.setOnClickListener(this);
         restaurant.setOnClickListener(this);
 
-        callFragment(FRAGMENT1);
-
         Intent intent= getIntent();
         guname = intent.getExtras().getString("guname");
+
+
+        hospital.setImageResource(R.drawable.hospital_on);
+        callFragment(FRAGMENT1);
+
     }
 
     @Override
@@ -59,21 +69,25 @@ public class StorePageList extends AppCompatActivity implements View.OnClickList
                         case R.id.hospital:
                             hospital.setImageResource(R.drawable.hospital_on);
                             hospital.setBackgroundResource(R.drawable.storepageicon_on);
+                            num = 1;
                             callFragment(FRAGMENT1);
                               break;
                         case R.id.drugstore:
                              drugstore.setImageResource(R.drawable.drugstore_on);
                              drugstore.setBackgroundResource(R.drawable.storepageicon_on);
+                            num = 2;
                             callFragment(FRAGMENT2);
                             break;
                         case R.id.beautysalon:
                             beautysalon.setImageResource(R.drawable.beautysalon_on);
                             beautysalon.setBackgroundResource(R.drawable.storepageicon_on);
+                            num = 3;
                             callFragment(FRAGMENT3);
                             break;
                         case R.id.restaurant:
                             restaurant.setImageResource(R.drawable.restaurant_on);
                             restaurant.setBackgroundResource(R.drawable.storepageicon_on);
+                            num = 4;
                             callFragment(FRAGMENT4);
                             break;
                     }//switch
@@ -81,7 +95,7 @@ public class StorePageList extends AppCompatActivity implements View.OnClickList
 
     private void callFragment(int fragmentNo) {
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction = getSupportFragmentManager().beginTransaction();
 
         switch (fragmentNo){
             case 1:
