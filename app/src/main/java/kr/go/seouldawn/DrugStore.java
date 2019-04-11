@@ -146,7 +146,7 @@ public class DrugStore extends Fragment {
             addr=Gangnam.child(num).child("address");
 
             LIST.clear();
-            adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged(); 
 
 
 

@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -42,16 +43,20 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
 
     ArrayList<String> ReceiveArr;
     ArrayList<String> ArrData = new ArrayList<>();
-    String guname,category,name,tell="",timee,address,vacation,num;
-    String smon,stues,swen,sthur,sfri,ssatur,ssun,sother;
-    int count,intent_count=0;
-    TextView iname, itel, iaddress, itime,ivacation;
+    String guname, category, name, tell = "", timee, address, vacation, num;
+    String smon, stues, swen, sthur, sfri, ssatur, ssun, sother;
+    int count, intent_count = 0;
+    TextView iname, itel, iaddress, itime1, itime2, ivacation;
 
-    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     DatabaseReference data;
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    String inOnMapAddress;
 
     private GoogleMap mMap;
-    public Geocoder geocoder;
+    public Geocoder geocoder = new Geocoder(this);
+    protected SupportMapFragment mapFragment;
+    String latitude, longitude, saddress;
+    HashMap<String, Double> map = new HashMap<>();
 
     ImageButton button;
 
@@ -59,21 +64,24 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        iname=findViewById(R.id.iname);
-        itel=findViewById(R.id.itel);
-        iaddress=findViewById(R.id.iaddress);
-        itime=findViewById(R.id.itime);
-        ivacation=findViewById(R.id.ivacation);
-        button=findViewById(R.id.button);
+        iname = findViewById(R.id.iname);
+        itel = findViewById(R.id.itel);
+        iaddress = findViewById(R.id.iaddress);
+        itime1 = findViewById(R.id.itime1);
+        itime2 = findViewById(R.id.itime2);
+//        ivacation = findViewById(R.id.ivacation);
+        button = findViewById(R.id.button);
 
         Intent intent = getIntent();
         //ReceiveArr = intent.getStringArrayListExtra("ArrList");
         guname = intent.getExtras().getString("guname");
-        category=intent.getExtras().getString("category");
-        count=intent.getExtras().getInt("count");
-        intent_count=intent.getExtras().getInt("intent_count");
+        category = intent.getExtras().getString("category");
+        count = intent.getExtras().getInt("count");
+        intent_count = intent.getExtras().getInt("intent_count");
         num = String.valueOf(count);
-        data=mDatabase.child(guname).child(category).child(num);
+        data = mDatabase.child(guname).child(category).child(num);
+//        address = intent.getExtras().getString("intent_address");
+
 
         ArrData.add(guname);
 
@@ -83,177 +91,224 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
         //  editText = findViewById(R.id.editText);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
 
-    }
+    } // onCreate
 
     @Override
     protected void onStart() {
         super.onStart();
-        DatabaseReference dname, tel,addr;
-        dname=data.child("name");
+        DatabaseReference dname, tel, addr;
+        dname = data.child("name");
 
-        if(category.equals("미용실")||category.equals("식당")) {
-            DatabaseReference time,vaca;
-            time=data.child("time");
-            vaca=data.child("vacation");
+        if (category.equals("미용실") || category.equals("식당")) {
+            DatabaseReference time, vaca;
+            time = data.child("time");
+            vaca = data.child("vacation");
             time.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    timee=dataSnapshot.getValue(String.class);
-                    itime.append(timee);
-                }
+                    timee = dataSnapshot.getValue(String.class);
+//                    itime.setText(timee);
+                } // onDataChange
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
             });
 
-            vaca.addValueEventListener(new ValueEventListener() {
+            /*vaca.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    vacation=dataSnapshot.getValue(String.class);
-                    ivacation.append("휴무일 : "+vacation);
-                }
+                    vacation = dataSnapshot.getValue(String.class);
+                    ivacation.setText("휴무일 : " + vacation);
+                } // onDataChange
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-            });
-        }
-        else{
-            DatabaseReference mon,tues,wen,thur,fri,satur,sun,other;
-            mon=data.child("monday");
-            tues=data.child("tuesday");
-            wen=data.child("wednesday");
-            thur=data.child("thursday");
-            fri=data.child("friday");
-            satur=data.child("saturday");
-            sun=data.child("sunday");
-            other=data.child("otherday");
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });*/
+        } //if(category.equals("미용실")||category.equals("식당"))
+
+        else {
+            DatabaseReference mon, tues, wen, thur, fri, satur, sun, other;
+            mon = data.child("monday");
+            tues = data.child("tuesday");
+            wen = data.child("wednesday");
+            thur = data.child("thursday");
+            fri = data.child("friday");
+            satur = data.child("saturday");
+            sun = data.child("sunday");
+            other = data.child("otherday");
+
+            itime1.setText("");
+            itime2.setText("");
 
             mon.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    smon=dataSnapshot.getValue(String.class);
-                    itime.append("\n"+"  월요일("+smon+")"+"\n");
-                }
+                    smon = dataSnapshot.getValue(String.class);
+                    itime1.append("\n  월요일(" + smon + ")" + "\n");
+                } //onDataChange
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-            });
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            }); //mon.addValueEventListener
+
             tues.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    stues=dataSnapshot.getValue(String.class);
-                    itime.append("  화요일("+stues+")"+"\n");
-                }
+                    stues = dataSnapshot.getValue(String.class);
+                    itime1.append("  화요일(" + stues + ")" + "\n");
+                } //onDataChange
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-            });
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            }); //tues.addValueEventListener
+
             wen.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    swen=dataSnapshot.getValue(String.class);
-                    itime.append("  수요일("+swen+")"+"\n");
+                    swen = dataSnapshot.getValue(String.class);
+                    itime1.append("  수요일(" + swen + ")" + "\n");
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
 
-            });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+
+            }); //wen.addValueEventListener
+
             thur.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    sthur=dataSnapshot.getValue(String.class);
-                    itime.append("  목요일("+sthur+")"+"\n");
+                    sthur = dataSnapshot.getValue(String.class);
+                    itime1.append("  목요일(" + sthur + ")" + "\n");
                 }
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-            });
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            }); //thur.addValueEventListener
+
             fri.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    sfri=dataSnapshot.getValue(String.class);
-                    itime.append("  금요일("+sfri+")"+"\n");
+                    sfri = dataSnapshot.getValue(String.class);
+                    itime2.append("\n금요일(" + sfri + ")" + "\n");
                 }
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-            });
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            }); //fri.addValueEventListener
+
             satur.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    ssatur=dataSnapshot.getValue(String.class);
-                    itime.append("  토요일("+ssatur+")"+"\n");
+                    ssatur = dataSnapshot.getValue(String.class);
+                    itime2.append("토요일(" + ssatur + ")" + "\n");
                 }
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-            });
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            }); //satur.addValueEventListener
+
             sun.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    ssun=dataSnapshot.getValue(String.class);
-                    itime.append("  일요일("+ssun+")"+"\n");
+                    ssun = dataSnapshot.getValue(String.class);
+                    itime2.append("일요일(" + ssun + ")" + "\n");
                 }
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-            });
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            }); // sun.addValueEventListener
+
             other.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    sother=dataSnapshot.getValue(String.class);
-                    itime.append("  기타("+sother+")");
+                    sother = dataSnapshot.getValue(String.class);
+                    itime2.append("기타(" + sother + ")");
                 }
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-            });
-
-
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            }); //other.addValueEventListener
         }//else
-        tel=data.child("tel");
-        addr=data.child("address");
+
+        tel = data.child("tel");
+        addr = data.child("address");
 
         dname.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                name=dataSnapshot.getValue(String.class);
-                iname.append(name);
+                name = dataSnapshot.getValue(String.class);
+
+                iname.setText(name);
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {              }
-        });
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        }); //dname.addValueEventListener
 
         tel.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                tell=dataSnapshot.getValue(String.class);
-                itel.append(tell);
+                tell = dataSnapshot.getValue(String.class);
+                itel.setText(tell);
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {              }
-        });
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        }); //tel.addValueEventListener
 
         addr.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                address=dataSnapshot.getValue(String.class);
-                iaddress.append(address);
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {              }
-        });
+                address = dataSnapshot.getValue(String.class);
+                String putAddress = address;
+                Log.e("IFTEST", String.valueOf(address.indexOf("(")));
+                if(address.contains("(")){
+                    putAddress = address.substring(0, address.indexOf("(")-1) + "\n" + address.substring(address.indexOf("("));
 
+                }
+                iaddress.setText(putAddress);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        }); //addr.addValueEventListener
     }//onStart
+
 
     //현수코드
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        DatabaseReference inOnMap = data.child("address");
         mMap = googleMap;
         geocoder = new Geocoder(this);
-        ////////////////////
 
-        button.setOnClickListener(new Button.OnClickListener() {
+        inOnMap.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                String str = address; //mConditionRef;//"신도림";//editText.getText().toString();
+                inOnMapAddress = dataSnapshot.getValue(String.class);
+
+                String str = inOnMapAddress; //mConditionRef;//"신도림";//editText.getText().toString();
                 //Log.e("next", address);
                 List<Address> addressList = null;
                 try {
@@ -278,16 +333,6 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
                     map.put("latitude", addre.getLatitude());
                     map.put("longtitude", addre.getLongitude());
                 }
-
-//                Map get_ll = new HashMap();
-//
-//                for(int i = 0; i < splitStr.length; i++){
-//                    get_pre = splitStr[i].trim().split("=");
-//                    get_ll.put(get_pre[0], get_pre[1]);
-//                }
-//
-//                Log.e("next", get_pre[0].toString() + " " + get_pre[1].toString());
-                //Log.e("next", (String)map.get("latitude") + " " + map.get("longitude"));
                 String latitude = map.get("latitude").toString(); //splitStr[10].substring(splitStr[10].indexOf("=") + 1); // 위도
                 String longitude = map.get("longtitude").toString(); //splitStr[12].substring(splitStr[12].indexOf("=") + 1); // 경도
                 //System.out.println(latitude);
@@ -311,59 +356,51 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
                 mMap.addMarker(mOptions2);
                 // 해당 좌표로 화면 줌
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 18));
+//                mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
             }
-        });
 
-        LatLng seoul = new LatLng(37.6, 127.0);
-        MarkerOptions mOptions3 = new MarkerOptions();
-        mOptions3.title("search result");
-        mOptions3.position(seoul);
-
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 10));
-    }
-
-
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        }); //inOnMap.addValueEventListener
+    } //onMapReady
 
     @Override
     public void onBackPressed() {
-        if(category.equals("미용실")){
+        if (category.equals("미용실")) {
             BeautySalon fg = new BeautySalon();
             Bundle bundle = new Bundle(3);
-            bundle.putString("guname",guname);
-            bundle.putString("category","식당");
-            bundle.putInt("intent_count",intent_count);
+            bundle.putString("guname", guname);
+            bundle.putString("category", "식당");
+            bundle.putInt("intent_count", intent_count);
             fg.setArguments(bundle);
-        }
-        else if(category.equals("식당")){
+        } else if (category.equals("식당")) {
             Restaurant fg = new Restaurant();
             Bundle bundle = new Bundle(3);
-            bundle.putString("guname",guname);
-            bundle.putString("category","식당");
-            bundle.putInt("intent_count",intent_count);
+            bundle.putString("guname", guname);
+            bundle.putString("category", "식당");
+            bundle.putInt("intent_count", intent_count);
             fg.setArguments(bundle);
 
-        }else if(category.equals("병원")){
+        } else if (category.equals("병원")) {
             Restaurant fg = new Restaurant();
             Bundle bundle = new Bundle(3);
-            bundle.putString("guname",guname);
-            bundle.putString("category","식당");
-            bundle.putInt("intent_count",intent_count);
+            bundle.putString("guname", guname);
+            bundle.putString("category", "식당");
+            bundle.putInt("intent_count", intent_count);
             fg.setArguments(bundle);
-        }
-        else{
+        } else {
             DrugStore fg = new DrugStore();
             Bundle bundle = new Bundle(3);
-            bundle.putString("guname",guname);
-            bundle.putString("category","식당");
-            bundle.putInt("intent_count",intent_count);
+            bundle.putString("guname", guname);
+            bundle.putString("category", "식당");
+            bundle.putInt("intent_count", intent_count);
             fg.setArguments(bundle);
         }
         super.onBackPressed();
         finish();
 
     }
-
 
 
 }
