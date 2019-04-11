@@ -2,6 +2,7 @@ package kr.go.seouldawn;
 
 
 import android.app.Activity;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -49,13 +50,14 @@ public class Hospital extends Fragment {
     //list_count : 다음버튼을 클릭시 1씩 더해주고 가게 선택시 OnItemClickListener에서 count=position+(list_count*10)로 넘겨준다.
     //intent_count : 받아온 count를 넣어줌
 
-
+    View.OnClickListener handler;
     int i = 0, j = 0, first, last, list_count = 0, intent_count = 0;
     String guname = "", category, tell, timee, address, check = "", check2 = "", name;
     ImageButton left, right;
     ListView listview;
     String numm;
     DatabaseReference Ddname;
+    ImageButton Call;
 
 
     ArrayList<String> LIST = new ArrayList<String>();
@@ -83,6 +85,8 @@ public class Hospital extends Fragment {
         intent_count = extra.getInt("intent_count");
         list_count = intent_count;
         Gangnam = mDatabase.child(guname).child(category);
+
+      //  Call.setOnClickListener(handler);
 
         listview = (ListView) view.findViewById(R.id.view2);
         adapter = new ListViewAdapter();
@@ -143,6 +147,8 @@ public class Hospital extends Fragment {
     }//onStart
 
 
+
+
     void Data(int first, int last) {
         this.first = first;
         this.last = last;
@@ -163,16 +169,25 @@ public class Hospital extends Fragment {
             LIST.clear();
             adapter.notifyDataSetChanged();
 
-//            Dname.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    storename =dataSnapshot.getValue(String.class);
-//                    Log.e("zzzz",storename);
-//                }
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {              }
-//            });
-//            // if(tell.) break;
+           tel.addValueEventListener(new ValueEventListener() {
+               @Override
+               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                   tell =dataSnapshot.getValue(String.class);
+                   Log.e("zzzz",tell);
+                   handler = new View.OnClickListener() {
+                       @Override
+                       public void onClick(View v) {
+                           Uri uri = Uri.parse("tel:"+tell);
+                           Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+                           intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                           startActivity(intent);
+                       }
+                   };
+                }
+               @Override
+              public void onCancelled(@NonNull DatabaseError databaseError) {              }
+           });
+          // if(tell.) break;
 
             addr.addValueEventListener(new ValueEventListener() {
                 @Override
