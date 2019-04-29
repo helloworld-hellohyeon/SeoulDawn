@@ -46,14 +46,14 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
     String guname, category, name, tell = "", timee, address, vacation, num;
     String smon, stues, swen, sthur, sfri, ssatur, ssun, sother;
     int count, intent_count = 0;
-    TextView iname, itel, iaddress, itime1, itime2, ivacation;
+    TextView iname, itel, iaddress, itime, itime1, itime2;
 
     DatabaseReference data;
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     String inOnMapAddress;
 
     private GoogleMap mMap;
-    public Geocoder geocoder = new Geocoder(this);
+    public Geocoder geocoder;
     protected SupportMapFragment mapFragment;
     String latitude, longitude, saddress;
     HashMap<String, Double> map = new HashMap<>();
@@ -69,7 +69,6 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
         iaddress = findViewById(R.id.iaddress);
         itime1 = findViewById(R.id.itime1);
         itime2 = findViewById(R.id.itime2);
-//        ivacation = findViewById(R.id.ivacation);
         button = findViewById(R.id.button);
 
         Intent intent = getIntent();
@@ -112,7 +111,7 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     timee = dataSnapshot.getValue(String.class);
-//                    itime.setText(timee);
+                    itime1.setText("\n월~일 : ("+ timee + ")");
                 } // onDataChange
 
                 @Override
@@ -120,17 +119,17 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
                 }
             });
 
-            /*vaca.addValueEventListener(new ValueEventListener() {
+            vaca.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     vacation = dataSnapshot.getValue(String.class);
-                    ivacation.setText("휴무일 : " + vacation);
+                    itime2.setText("\n휴무일 : " + vacation);
                 } // onDataChange
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
-            });*/
+            });
         } //if(category.equals("미용실")||category.equals("식당"))
 
         else {
@@ -279,7 +278,6 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 address = dataSnapshot.getValue(String.class);
                 String putAddress = address;
-                Log.e("IFTEST", String.valueOf(address.indexOf("(")));
                 if(address.contains("(")){
                     putAddress = address.substring(0, address.indexOf("(")-1) + "\n" + address.substring(address.indexOf("("));
 
