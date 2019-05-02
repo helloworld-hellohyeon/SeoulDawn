@@ -31,13 +31,13 @@ public class BeautySalon extends Fragment {
     FirebaseDatabase database;
     int first,last,list_count=0,intent_count=0;
     int con,ex;
-    String numm;
+    String numm,tel1;
     DatabaseReference Ddname;
-    String guname,category,tell="",timee,address,check="",check2="", name;
+    String guname,category,timee,address,check="",check2="", name;
     ImageButton left,right;
     ListView listview;
-    ListViewAdapter adapter;
-    ArrayList<String> LIST_Hair = new ArrayList<String>();
+    ListViewBtnAdapter adapter;
+    ArrayList<ListViewBtnItem> LIST = new ArrayList<ListViewBtnItem>();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     DatabaseReference Gangnam;
 
@@ -64,7 +64,7 @@ public class BeautySalon extends Fragment {
 
 
         listview = (ListView)view.findViewById(R.id.view2);
-        adapter = new ListViewAdapter() ;
+        adapter = new ListViewBtnAdapter(getContext(),R.layout.activity_list_element,LIST);
 
         listview.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -136,7 +136,7 @@ public class BeautySalon extends Fragment {
             time = Gangnam.child(num).child("time");
             addr=Gangnam.child(num).child("address");
 
-            LIST_Hair.clear();
+            LIST.clear();
             adapter.notifyDataSetChanged();
 
 
@@ -162,15 +162,29 @@ public class BeautySalon extends Fragment {
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {              }
             });
+            tel.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //tel1 : 전화번호 가져온 거 담는 String
+                    tel1= dataSnapshot.getValue(String.class);
+                    //adapter.setTel(tel1);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {            }
+            });
 
             Dname.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     name = dataSnapshot.getValue(String.class);
+                    ListViewBtnItem item = new ListViewBtnItem();
                     Log.d("GangNamGu", "Value is " + name);
                     if(name != null){
-                        LIST_Hair.add(name +"\n\n"+address);
-                        adapter.addItem(name,address);
+                        //가게 이름, 주소, 전화번호를 각 리스트의 item에 저장해줌
+                        item.setName(name);
+                        item.setAddress(address);
+                        item.setTel(tel1);
+                        LIST.add(item);
                         adapter.notifyDataSetChanged();
                     }
                     else {

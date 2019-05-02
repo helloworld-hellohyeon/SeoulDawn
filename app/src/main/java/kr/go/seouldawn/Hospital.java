@@ -37,14 +37,7 @@ import javax.security.auth.Subject;
 
 
 public class Hospital extends Fragment {
-    TextView textView;
-    ArrayList<String> ArrData = new ArrayList<>();
-    Button hos;
-    Button phar;
-    Button hair;
-    Button res;
-    ListViewAdapter adapter;
-    //병원,약국
+    //병원
     //가게 클릭시 sub4 실행(intent:"guname"-구이름, "category"-카테고리,"count"-선택한가게의 배열 숫자)
     //list_count : 다음버튼을 클릭시 1씩 더해주고 가게 선택시 OnItemClickListener에서 count=position+(list_count*10)로 넘겨준다.
     //intent_count : 받아온 count를 넣어줌
@@ -54,11 +47,12 @@ public class Hospital extends Fragment {
     String guname = "", category, tell, timee, address, check = "", check2 = "", name;
     ImageButton left, right;
     ListView listview;
-    String numm;
+    String numm,tel1;
     DatabaseReference Ddname;
+    ListViewBtnAdapter adapter;
 
 
-    ArrayList<String> LIST = new ArrayList<String>();
+    ArrayList<ListViewBtnItem> LIST = new ArrayList<ListViewBtnItem>();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     DatabaseReference Gangnam;
 
@@ -68,7 +62,6 @@ public class Hospital extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -85,11 +78,10 @@ public class Hospital extends Fragment {
         Gangnam = mDatabase.child(guname).child(category);
 
         listview = (ListView) view.findViewById(R.id.view2);
-        adapter = new ListViewAdapter();
+        adapter = new ListViewBtnAdapter(getContext(),R.layout.activity_list_element,LIST);
 
         listview.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        listview.setAdapter(adapter);
         listview.setOnItemClickListener(itemHandler);
 
         View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false);
@@ -200,16 +192,29 @@ public class Hospital extends Fragment {
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
+            tel.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //tel1 : 전화번호 가져온 거 담는 String
+                    tel1= dataSnapshot.getValue(String.class);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {            }
+            });
 
 
             Dname.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     name = dataSnapshot.getValue(String.class);
+                    ListViewBtnItem item = new ListViewBtnItem();
                     Log.d("GangNamGu", "Value is " + name);
                     if (name != null) {
-                        LIST.add(name + "\n\n" + address);
-                        adapter.addItem(name, address);
+                        //가게 이름, 주소, 전화번호를 각 리스트의 item에 저장해줌
+                        item.setName(name);
+                        item.setAddress(address);
+                        item.setTel(tel1);
+                        LIST.add(item);
                         adapter.notifyDataSetChanged();
                     } else {
                         check = "no";
