@@ -37,13 +37,13 @@ public class Restaurant extends Fragment {
     FirebaseDatabase database;
     int first,last,list_count=0,intent_count=0;
     int con,ex;
-    String numm;
+    String numm,tel1;
     DatabaseReference Ddname;
-    String guname,category,tell="",timee,address,check="",check2="",name;
+    String guname,category,timee,address,check="",check2="",name;
     ImageButton left,right;
-    ListViewAdapter adapter;
+    ListViewBtnAdapter adapter;
     ListView listview;
-    ArrayList<String> LIST_Hair = new ArrayList<String>();
+    ArrayList<ListViewBtnItem> LIST = new ArrayList<ListViewBtnItem>();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     DatabaseReference Gangnam;
     public Restaurant() { }
@@ -67,11 +67,10 @@ public class Restaurant extends Fragment {
 
 
         listview = (ListView)view.findViewById(R.id.view2);
-        adapter = new ListViewAdapter() ;
+        adapter = new ListViewBtnAdapter(getContext(),R.layout.activity_list_element,LIST);
 
         listview.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        listview.setAdapter(adapter);
         listview.setOnItemClickListener(itemHandler);
 
         View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false) ;
@@ -141,13 +140,13 @@ public class Restaurant extends Fragment {
             time = Gangnam.child(num).child("time");
             addr=Gangnam.child(num).child("address");
 
-            LIST_Hair.clear();
+            LIST.clear();
             adapter.notifyDataSetChanged();
 
             tel.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    tell=dataSnapshot.getValue(String.class);
+                    tel1=dataSnapshot.getValue(String.class);
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {              }
@@ -170,7 +169,6 @@ public class Restaurant extends Fragment {
 
                     if(address.contains("(")){
                         address = address.substring(0, address.indexOf("(")-1) + "\n" + address.substring(address.indexOf("("));
-
                     }
 
                 }
@@ -182,13 +180,15 @@ public class Restaurant extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     name = dataSnapshot.getValue(String.class);
+                    ListViewBtnItem item = new ListViewBtnItem();
                     Log.d("GangNamGu", "Value is " + name);
                     if(name != null){
-                        LIST_Hair.add(name +"\n\n"+address);
-                        adapter.addItem(name,address);
+                        //가게 이름, 주소, 전화번호를 각 리스트의 item에 저장해줌
+                        item.setName(name);
+                        item.setAddress(address);
+                        item.setTel(tel1);
+                        LIST.add(item);
                         adapter.notifyDataSetChanged();
-
-
                     }
                     else {
                         check="no";

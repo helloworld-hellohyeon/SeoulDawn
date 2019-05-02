@@ -70,7 +70,7 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
         itime1 = findViewById(R.id.itime1);
         itime2 = findViewById(R.id.itime2);
 //        ivacation = findViewById(R.id.ivacation);
-        button = findViewById(R.id.button);
+        //button = findViewById(R.id.button);
 
         Intent intent = getIntent();
         //ReceiveArr = intent.getStringArrayListExtra("ArrList");
