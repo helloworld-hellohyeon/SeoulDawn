@@ -74,9 +74,10 @@ public class Restaurant extends Fragment {
         listview.setOnItemClickListener(itemHandler);
 
         View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false) ;
-        right=(ImageButton)footer.findViewById(R.id.btn_right);
+        right=(ImageButton)view.findViewById(R.id.btn_right);
+        left = (ImageButton) view.findViewById(R.id.btn_left);
 
-        listview.addFooterView(footer);
+        //listview.addFooterView(footer);
 
         right.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,11 +89,34 @@ public class Restaurant extends Fragment {
                 }
                 else{
                     if(check2.equals("no")){
-                        Toast.makeText(root, "가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(root, "2가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                        check2="yes";
                     }else {
                         list_count++;
                         intent_count++;
-                        first = first + 10;
+                        first = first + 7;
+                        Data(first, first);
+                    }
+                }
+            }
+        });
+
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity root = getActivity();
+                if(list_count<=0) {
+                    Toast.makeText(root, "가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                    check2="yes";
+                }
+                else{
+                    if(check2.equals("no")){
+                        check2="yes";
+                        Toast.makeText(root, "2가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                    }else {
+                        list_count--;
+                        intent_count--;
+                        first = first - 7;
                         Data(first, first);
                     }
                 }
@@ -103,7 +127,7 @@ public class Restaurant extends Fragment {
     AdapterView.OnItemClickListener itemHandler=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            position = position+(list_count*10);
+            position = position+(list_count*7);
             Intent intent = new Intent(getContext(), Detail.class);
             intent.putExtra("guname",guname);
             intent.putExtra("category",category);
@@ -118,15 +142,15 @@ public class Restaurant extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        Data(intent_count*5,intent_count*5);
-        this.first=intent_count*5;
+        Data(intent_count*7,intent_count*7);
+        this.first=intent_count*7;
     }//onStart
 
 
     void Data(int first,int last) {
         this.first=first;
         this.last=last;
-        last=last+5;
+        last=last+7;
         check="";
         check2="";
         for (first = first; first<last; first++) {
@@ -166,9 +190,10 @@ public class Restaurant extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     address=dataSnapshot.getValue(String.class);
-
-                    if(address.contains("(")){
-                        address = address.substring(0, address.indexOf("(")-1) + "\n" + address.substring(address.indexOf("("));
+                    if(address != null) {
+                        if (address.contains("(")) {
+                            address = address.substring(0, address.indexOf("(") - 1) + "\n" + address.substring(address.indexOf("("));
+                        }
                     }
 
                 }
