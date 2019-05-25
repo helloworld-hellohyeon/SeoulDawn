@@ -37,13 +37,13 @@ public class Restaurant extends Fragment {
     FirebaseDatabase database;
     int first,last,list_count=0,intent_count=0;
     int con,ex;
-    String numm;
+    String numm,tel1;
     DatabaseReference Ddname;
-    String guname,category,tell="",timee,address,check="",check2="",name;
+    String guname,category,timee,address,check="",check2="",name;
     ImageButton left,right;
-    ListViewAdapter adapter;
+    ListViewBtnAdapter adapter;
     ListView listview;
-    ArrayList<String> LIST_Hair = new ArrayList<String>();
+    ArrayList<ListViewBtnItem> LIST = new ArrayList<ListViewBtnItem>();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     DatabaseReference Gangnam;
     public Restaurant() { }
@@ -67,17 +67,17 @@ public class Restaurant extends Fragment {
 
 
         listview = (ListView)view.findViewById(R.id.view2);
-        adapter = new ListViewAdapter() ;
+        adapter = new ListViewBtnAdapter(getContext(),R.layout.activity_list_element,LIST);
 
         listview.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        listview.setAdapter(adapter);
         listview.setOnItemClickListener(itemHandler);
 
         View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false) ;
-        right=(ImageButton)footer.findViewById(R.id.btn_right);
+        right=(ImageButton)view.findViewById(R.id.btn_right);
+        left = (ImageButton) view.findViewById(R.id.btn_left);
 
-        listview.addFooterView(footer);
+        //listview.addFooterView(footer);
 
         right.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,11 +89,34 @@ public class Restaurant extends Fragment {
                 }
                 else{
                     if(check2.equals("no")){
-                        Toast.makeText(root, "가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(root, "2가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                        check2="yes";
                     }else {
                         list_count++;
                         intent_count++;
-                        first = first + 10;
+                        first = first + 7;
+                        Data(first, first);
+                    }
+                }
+            }
+        });
+
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity root = getActivity();
+                if(list_count<=0) {
+                    Toast.makeText(root, "가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                    check2="yes";
+                }
+                else{
+                    if(check2.equals("no")){
+                        check2="yes";
+                        Toast.makeText(root, "2가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                    }else {
+                        list_count--;
+                        intent_count--;
+                        first = first - 7;
                         Data(first, first);
                     }
                 }
@@ -104,7 +127,7 @@ public class Restaurant extends Fragment {
     AdapterView.OnItemClickListener itemHandler=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            position = position+(list_count*10);
+            position = position+(list_count*7);
             Intent intent = new Intent(getContext(), Detail.class);
             intent.putExtra("guname",guname);
             intent.putExtra("category",category);
@@ -119,15 +142,15 @@ public class Restaurant extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        Data(intent_count*5,intent_count*5);
-        this.first=intent_count*5;
+        Data(intent_count*7,intent_count*7);
+        this.first=intent_count*7;
     }//onStart
 
 
     void Data(int first,int last) {
         this.first=first;
         this.last=last;
-        last=last+5;
+        last=last+7;
         check="";
         check2="";
         for (first = first; first<last; first++) {
@@ -141,13 +164,13 @@ public class Restaurant extends Fragment {
             time = Gangnam.child(num).child("time");
             addr=Gangnam.child(num).child("address");
 
-            LIST_Hair.clear();
+            LIST.clear();
             adapter.notifyDataSetChanged();
 
             tel.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    tell=dataSnapshot.getValue(String.class);
+                    tel1=dataSnapshot.getValue(String.class);
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {              }
@@ -167,10 +190,10 @@ public class Restaurant extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     address=dataSnapshot.getValue(String.class);
-
-                    if(address.contains("(")){
-                        address = address.substring(0, address.indexOf("(")-1) + "\n" + address.substring(address.indexOf("("));
-
+                    if(address != null) {
+                        if (address.contains("(")) {
+                            address = address.substring(0, address.indexOf("(") - 1) + "\n" + address.substring(address.indexOf("("));
+                        }
                     }
 
                 }
@@ -182,13 +205,15 @@ public class Restaurant extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     name = dataSnapshot.getValue(String.class);
+                    ListViewBtnItem item = new ListViewBtnItem();
                     Log.d("GangNamGu", "Value is " + name);
                     if(name != null){
-                        LIST_Hair.add(name +"\n\n"+address);
-                        adapter.addItem(name,address);
+                        //가게 이름, 주소, 전화번호를 각 리스트의 item에 저장해줌
+                        item.setName(name);
+                        item.setAddress(address);
+                        item.setTel(tel1);
+                        LIST.add(item);
                         adapter.notifyDataSetChanged();
-
-
                     }
                     else {
                         check="no";

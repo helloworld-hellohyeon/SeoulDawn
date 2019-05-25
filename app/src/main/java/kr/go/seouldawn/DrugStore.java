@@ -2,6 +2,7 @@ package kr.go.seouldawn;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -26,14 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class DrugStore extends Fragment {
-    TextView textView;
-    ArrayList<String> ArrData = new ArrayList<>();
-    Button hos;
-    Button phar;
-    Button hair;
-    Button res;
-
-    //병원,약국
+    //약국
     //가게 클릭시 sub4 실행(intent:"guname"-구이름, "category"-카테고리,"count"-선택한가게의 배열 숫자)
     //list_count : 다음버튼을 클릭시 1씩 더해주고 가게 선택시 OnItemClickListener에서 count=position+(list_count*10)로 넘겨준다.
     //intent_count : 받아온 count를 넣어줌
@@ -43,10 +37,10 @@ public class DrugStore extends Fragment {
     String guname="",category,tell,timee,address,check="",check2="",name;
     ImageButton left,right;
     ListView listview;
-    String numm;
+    String numm,tel1;
     DatabaseReference Ddname;
-    ListViewAdapter adapter;
-    ArrayList<String> LIST = new ArrayList<String>();
+    ListViewBtnAdapter adapter;
+    ArrayList<ListViewBtnItem> LIST = new ArrayList<ListViewBtnItem>();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     DatabaseReference Gangnam;
 
@@ -63,7 +57,6 @@ public class DrugStore extends Fragment {
 
         final View view = inflater.inflate(R.layout.activity_hospital, container, false);
 
-
         Bundle extra = getArguments();
         guname = extra.getString("guname");
         category = extra.getString("category");
@@ -72,15 +65,17 @@ public class DrugStore extends Fragment {
         Gangnam = mDatabase.child(guname).child(category);
 
         listview = (ListView)view.findViewById(R.id.view2);
-        adapter = new ListViewAdapter() ;
+        adapter = new ListViewBtnAdapter(getContext(),R.layout.activity_list_element,LIST);
+
+        View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false) ;
+        right=(ImageButton)view.findViewById(R.id.btn_right);
+        left=(ImageButton)view.findViewById(R.id.btn_left);
+        //listview.addFooterView(footer);
+        //footer를 사용했을 시 footer.findView..를 함
 
         listview.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        listview.setOnItemClickListener(itemHandler);;
-
-        View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false) ;
-        right=(ImageButton)footer.findViewById(R.id.btn_right);
-        listview.addFooterView(footer);
+        listview.setOnItemClickListener(itemHandler);
 
 
         right.setOnClickListener(new View.OnClickListener() {
@@ -94,25 +89,49 @@ public class DrugStore extends Fragment {
                 }
                 else{
                     if(check2.equals("no")){
-                        Toast.makeText(root, "가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
-
+                        Toast.makeText(root, "2가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                        check2="yes";
                     }else {
                         list_count++;
                         intent_count++;
-                        first = first + 5;
+                        first = first + 7;
                         Data(first, first);
                     }
                 }
 
             }
         });
+
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity root = getActivity();
+                if(list_count<=0) {
+                    Toast.makeText(root, "가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                    check2="yes";
+                }
+                else{
+                    if(check2.equals("no")){
+                        Toast.makeText(root, "2가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                        check2="yes";
+                    }else {
+                        list_count--;
+                        intent_count--;
+                        first = first - 7;
+                        Data(first, first);
+                    }
+                }
+            }
+        });
+
         return view;
     }//onCreate
 
     AdapterView.OnItemClickListener itemHandler=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            position = position+(list_count*5);
+            Log.d("알림","리스트뷰 클릭");
+            position = position+(list_count*7);
             Intent intent = new Intent(getContext(), Detail.class); //getApplicationContext()
             intent.putExtra("guname",guname);
             intent.putExtra("category",category);
@@ -133,7 +152,7 @@ public class DrugStore extends Fragment {
     void Data(int first,int last) {
         this.first=first;
         this.last=last;
-        last=last+5;
+        last=last+7;
         check="";
         check2="";
         for (first = first; first<last; first++) {
@@ -144,6 +163,7 @@ public class DrugStore extends Fragment {
             Dname = Gangnam.child(num).child("name");
             time = Gangnam.child(num).child("monday");
             addr=Gangnam.child(num).child("address");
+            tel = Gangnam.child(num).child("tel");
 
             LIST.clear();
             adapter.notifyDataSetChanged(); 
@@ -163,23 +183,40 @@ public class DrugStore extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     address=dataSnapshot.getValue(String.class);
-                    if(address.contains("(")){
-                        address = address.substring(0, address.indexOf("(")-1) + "\n" + address.substring(address.indexOf("("));
-
+                    //주소 줄바꿈
+                    if(address != null) {
+                        if (address.contains("(")) {
+                            address = address.substring(0, address.indexOf("(") - 1) + "\n" + address.substring(address.indexOf("("));
+                        }
                     }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {              }
+            });
+            tel.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //tel1 : 전화번호 가져온 거 담는 String
+                    tel1= dataSnapshot.getValue(String.class);
+                    //adapter.setTel(tel1);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {            }
             });
 
             Dname.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     name = dataSnapshot.getValue(String.class);
+                    ListViewBtnItem item = new ListViewBtnItem();
                     Log.d("GangNamGu", "Value is " + name);
                     if(name != null){
-                        LIST.add(name +"\n\n"+address);
-                        adapter.addItem(name,address);
+                        //가게 이름, 주소, 전화번호를 각 리스트의 item에 저장해줌
+                        item.setName(name);
+                        item.setAddress(address);
+                        item.setTel(tel1);
+                        LIST.add(item);
+                      //  adapter.addItem(name,address);
                         adapter.notifyDataSetChanged();
                     }
                     else {
@@ -220,7 +257,6 @@ public class DrugStore extends Fragment {
                         check2="no";
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -229,7 +265,9 @@ public class DrugStore extends Fragment {
 
 
 
+
         }//for
 
-    }
+    }//Data
+
 }

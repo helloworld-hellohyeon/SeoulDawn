@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.content.Intent;
@@ -37,14 +38,7 @@ import javax.security.auth.Subject;
 
 
 public class Hospital extends Fragment {
-    TextView textView;
-    ArrayList<String> ArrData = new ArrayList<>();
-    Button hos;
-    Button phar;
-    Button hair;
-    Button res;
-    ListViewAdapter adapter;
-    //병원,약국
+    //병원
     //가게 클릭시 sub4 실행(intent:"guname"-구이름, "category"-카테고리,"count"-선택한가게의 배열 숫자)
     //list_count : 다음버튼을 클릭시 1씩 더해주고 가게 선택시 OnItemClickListener에서 count=position+(list_count*10)로 넘겨준다.
     //intent_count : 받아온 count를 넣어줌
@@ -54,11 +48,12 @@ public class Hospital extends Fragment {
     String guname = "", category, tell, timee, address, check = "", check2 = "", name;
     ImageButton left, right;
     ListView listview;
-    String numm;
+    String numm,tel1;
     DatabaseReference Ddname;
+    ListViewBtnAdapter adapter;
 
 
-    ArrayList<String> LIST = new ArrayList<String>();
+    ArrayList<ListViewBtnItem> LIST = new ArrayList<ListViewBtnItem>();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     DatabaseReference Gangnam;
 
@@ -68,7 +63,6 @@ public class Hospital extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -85,16 +79,18 @@ public class Hospital extends Fragment {
         Gangnam = mDatabase.child(guname).child(category);
 
         listview = (ListView) view.findViewById(R.id.view2);
-        adapter = new ListViewAdapter();
+        adapter = new ListViewBtnAdapter(getContext(),R.layout.activity_list_element,LIST);
+
+        View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false);
+        right = (ImageButton) view.findViewById(R.id.btn_right);
+        left = (ImageButton) view.findViewById(R.id.btn_left);
+        //listview.addFooterView(footer);
 
         listview.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        listview.setAdapter(adapter);
         listview.setOnItemClickListener(itemHandler);
 
-        View footer = getLayoutInflater().inflate(R.layout.activity_list_footer, null, false);
-        right = (ImageButton) footer.findViewById(R.id.btn_right);
-        listview.addFooterView(footer);
+        //setListViewHeightBasedOnChildren(listview);
 
 
         right.setOnClickListener(new View.OnClickListener() {
@@ -103,28 +99,53 @@ public class Hospital extends Fragment {
             public void onClick(View v) {
                 Activity root = getActivity();
                 if (check.equals("no")) {
+                    Toast.makeText(root, "가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
                     check2 = "no";
                 } else {
                     if (check2.equals("no")) {
-
-
+                        Toast.makeText(root, "2가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                        check="yes";
                     } else {
                         list_count++;
                         intent_count++;
-                        first = first + 6;
+                        first = first + 7;
                         Data(first, first);
                     }
                 }
 
             }
         });
+
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity root = getActivity();
+                if(list_count<=0) {
+                    Toast.makeText(root, "가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                    check2="yes";
+                }
+                else{
+                    if(check2.equals("no")){
+                        Toast.makeText(root, "2가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                        check2="yes";
+                    }else {
+                        list_count--;
+                        intent_count--;
+                        first = first - 7;
+                        Data(first, first);
+                    }
+                }
+            }
+        });
+
+
         return view;
     }//onCreate
 
     AdapterView.OnItemClickListener itemHandler = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            position = position + (list_count * 6);
+            position = position + (list_count * 7);
             Intent intent = new Intent(getContext(), Detail.class); //getApplicationContext()
             intent.putExtra("guname", guname);
             intent.putExtra("category", category);
@@ -138,17 +159,18 @@ public class Hospital extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Data(intent_count * 6, intent_count * 6);
-        this.first = intent_count * 6;
+        Data(intent_count * 7, intent_count * 7);
+        this.first = intent_count * 7;
     }//onStart
 
 
     void Data(int first, int last) {
         this.first = first;
         this.last = last;
-        last = last + 6;
+        last = last + 7;
+        /*
         check = "";
-        check2 = "";
+        check2 = "";*/
         for (first = first; first < last; first++) {
             final DatabaseReference Dname;
             DatabaseReference tel, time, addr;
@@ -178,9 +200,10 @@ public class Hospital extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     address = dataSnapshot.getValue(String.class);
-                    if(address.contains("(")){
-                        address = address.substring(0, address.indexOf("(")-1) + "\n" + address.substring(address.indexOf("("));
-
+                    if(address != null) {
+                        if (address.contains("(")) {
+                            address = address.substring(0, address.indexOf("(") - 1) + "\n" + address.substring(address.indexOf("("));
+                        }
                     }
                 }
 
@@ -200,16 +223,29 @@ public class Hospital extends Fragment {
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
+            tel.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //tel1 : 전화번호 가져온 거 담는 String
+                    tel1= dataSnapshot.getValue(String.class);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {            }
+            });
 
 
             Dname.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     name = dataSnapshot.getValue(String.class);
+                    ListViewBtnItem item = new ListViewBtnItem();
                     Log.d("GangNamGu", "Value is " + name);
                     if (name != null) {
-                        LIST.add(name + "\n\n" + address);
-                        adapter.addItem(name, address);
+                        //가게 이름, 주소, 전화번호를 각 리스트의 item에 저장해줌
+                        item.setName(name);
+                        item.setAddress(address);
+                        item.setTel(tel1);
+                        LIST.add(item);
                         adapter.notifyDataSetChanged();
                     } else {
                         check = "no";
@@ -260,4 +296,30 @@ public class Hospital extends Fragment {
         }//for
 
     }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.AT_MOST);
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            //listItem.measure(0, 0);
+            listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+
+        params.height = totalHeight+(listView.getDividerHeight()*(listAdapter.getCount()-1));
+        listView.setLayoutParams(params);
+
+        listView.requestLayout();
+    }
+
+
 }
