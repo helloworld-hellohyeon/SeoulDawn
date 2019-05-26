@@ -24,7 +24,7 @@
         android:orientation="horizontal"
         android:weightSum="4"
         android:layout_weight="0"
-        android:layout_marginTop="-2.7dp"
+        android:layout_marginTop="-4dp"
         >
 
         <ImageButton

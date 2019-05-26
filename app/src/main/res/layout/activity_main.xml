@@ -18,13 +18,15 @@
         android:layout_height="50dp"
         android:adjustViewBounds="true"
         android:src="@drawable/mainpagetitle"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="50dp"
         />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/treeicons"
         android:layout_width="match_parent"
-        android:layout_height="143dp"
+        android:layout_height="340dp"
+        android:paddingLeft="60dp"
+        android:paddingRight="60dp"
 
         >
 
@@ -34,9 +36,24 @@
             android:layout_height="144dp"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/homecoming"></kr.go.seoul.trafficbus.TrafficBusButtonTypeN>
+            app:layout_constraintRight_toLeftOf="@id/search_station"></kr.go.seoul.trafficbus.TrafficBusButtonTypeN>
+
+        <ImageButton
+            android:id="@+id/search_station"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="#00ffffff"
+            android:maxWidth="97dp"
+            android:maxHeight="144dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/searchbus"
+            app:layout_constraintLeft_toRightOf="@id/dawnbus"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/dawnbus"
+             />
 
         <ImageButton
             android:id="@+id/homecoming"
@@ -48,10 +65,11 @@
             android:maxHeight="144dp"
             android:scaleType="fitXY"
             android:src="@drawable/homecoming"
+            android:layout_marginTop="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/dawnbus"
-            app:layout_constraintRight_toLeftOf="@id/dawnstore"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintLeft_toLeftOf="@id/dawnbus"
+            app:layout_constraintRight_toRightOf="@id/dawnbus"
+            app:layout_constraintTop_toBottomOf="@id/dawnbus"/>
 
         <ImageButton
             android:id="@+id/dawnstore"
@@ -62,10 +80,12 @@
             android:maxWidth="97dp"
             android:maxHeight="144dp"
             android:scaleType="fitXY"
+            android:layout_marginTop="20dp"
             android:src="@drawable/dawnstore"
-            app:layout_constraintLeft_toRightOf="@id/homecoming"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/search_station"
+            app:layout_constraintRight_toRightOf="@id/search_station"
+            app:layout_constraintTop_toBottomOf="@id/search_station" />
 
 
     </android.support.constraint.ConstraintLayout>

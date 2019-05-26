@@ -89,7 +89,7 @@ public class DrugStore extends Fragment {
                 }
                 else{
                     if(check2.equals("no")){
-                        Toast.makeText(root, "2가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(root, "가게가 더이상 없습니다.", Toast.LENGTH_LONG).show();
                         check2="yes";
                     }else {
                         list_count++;
