@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="103dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/nav" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="69dp"
+        android:background="#9087ed"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:layout_marginTop="-10dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/backgroundtitle"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
+
+            <EditText
+                android:id="@+id/search_key"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="정류장명을 국문으로 입력해주세요."
+                android:includeFontPadding="false"
+                android:paddingLeft="5dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textColorHint="#757277"
+                android:textCursorDrawable="@null"
+                android:textSize="16dp" />
+
+            <Button
+                android:id="@+id/search_station"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#00FFFFFF"
+                android:text="검색"
+                android:textSize="16dp"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+
+        >
+
+        <ListView
+            android:id="@+id/stationList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@drawable/divider"
+            android:dividerHeight="1.5dp"
+            android:choiceMode="singleChoice">
+
+
+        </ListView>
+
+
+    </RelativeLayout>
+
+</LinearLayout>

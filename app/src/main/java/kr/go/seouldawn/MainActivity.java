@@ -25,9 +25,10 @@ public class MainActivity extends AppCompatActivity {
 
                 busTypeN = (TrafficBusButtonTypeN) findViewById(R.id.dawnbus);
                 busTypeN.setOpenAPIKey(busKey);
-
+                ImageButton SearchStation = (ImageButton) findViewById(R.id.search_station);
                 ImageButton HomeComing = (ImageButton) findViewById(R.id.homecoming);
                 ImageButton DawnStore = (ImageButton) findViewById(R.id.dawnstore);
+                SearchStation.setOnClickListener(btnHandler);
                 HomeComing.setOnClickListener(btnHandler);
                 DawnStore.setOnClickListener(btnHandler);
     }
@@ -37,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent;
                     switch (v.getId()){
+                        case R.id.search_station:
+                            intent = new Intent(MainActivity.this, SearchBus.class);
+                            startActivity(intent);
+                            break;
                         case R.id.homecoming:
                             intent = new Intent(MainActivity.this, HomeComing.class);
                             startActivity(intent);

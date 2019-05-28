@@ -17,6 +17,8 @@
             android:footerDividersEnabled="false"
             android:descendantFocusability="blocksDescendants"
             android:layout_weight="9"
+            android:divider="@drawable/divider"
+            android:dividerHeight="1.5dp"
             />
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"

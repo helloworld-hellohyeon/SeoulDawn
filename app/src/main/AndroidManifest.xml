@@ -19,8 +19,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LIstViewItem"></activity>
+        <activity android:name=".ListViewBus"></activity>
+        <activity android:name=".ListViewBtnAdapter"></activity>
         <activity android:name=".ListViewAdapter" />
+        <activity android:name=".ListviewBusAdapter" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -46,6 +48,7 @@
         <activity android:name=".Restaurant" />
         <activity android:name=".Detail" />
         <activity android:name=".slideAdapter" />
+        <activity android:name=".SearchBus" />
     </application>
 
 </manifest>

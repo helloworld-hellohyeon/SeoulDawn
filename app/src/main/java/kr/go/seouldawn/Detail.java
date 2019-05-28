@@ -105,14 +105,14 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
         dname = data.child("name");
 
         if (category.equals("미용실") || category.equals("식당")) {
-            DatabaseReference time, vaca;
+            final DatabaseReference time, vaca;
             time = data.child("time");
             vaca = data.child("vacation");
             time.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     timee = dataSnapshot.getValue(String.class);
-                    itime1.setText("\n월~일 : ("+ timee + ")");
+                    itime1.setText("\n  월~일 : ("+ timee + ")");
                 } // onDataChange
 
                 @Override
@@ -124,7 +124,17 @@ public class Detail extends FragmentActivity implements OnMapReadyCallback {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     vacation = dataSnapshot.getValue(String.class);
-                    itime2.setText("\n휴무일 : " + vacation);
+                    Log.e("값 체크", (vacation.equals(""))+"");
+//                        if(!(vacation.equals(null)) || vacation != " "){
+//                            itime2.setText("\n"+vacation);
+//                        }else{
+//                            itime2.setText("\n연중무휴");
+//                        }
+                          if(vacation.equals("")){
+                              itime2.setText("\n연중무휴");
+                          }else{
+                              itime2.setText("\n"+vacation);
+                          }
                 } // onDataChange
 
                 @Override
