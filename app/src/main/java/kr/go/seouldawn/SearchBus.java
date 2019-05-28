@@ -1,13 +1,22 @@
 package kr.go.seouldawn;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -23,9 +32,8 @@ public class SearchBus extends AppCompatActivity {
 
     EditText edit;
     Button search_bus;
-
+    ProgressDialog pb;
     String key = "w1LpendNML9NSRvEVJVRbZTbwm0ZK8bwkZiIoXsOwU0QZzhoQZmSDrRgr%2FEeqvNRWV%2F4NGpifpwT8LM1Hvu0dg%3D%3D";
-
     HashMap<String, String> result = new HashMap<>();
     ListView listView;
     ListviewBusAdapter adapter;
@@ -34,6 +42,40 @@ public class SearchBus extends AppCompatActivity {
     String buses[] = {"N13", "N15", "N16", "N26", "N30", "N37", "N61", "N62", "N65", "N6001", "N6002"};
     String name = null, id = null, arsID = null;
     InputMethodManager imm;
+
+
+    private class CheckTypesTask extends AsyncTask<Void, Void, Void> {
+
+        ProgressDialog asyncDialog = new ProgressDialog(SearchBus.this);
+
+        @Override
+        protected void onPreExecute() {
+            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            asyncDialog.setMessage("로딩중입니다..");
+            asyncDialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            try {
+                for (int i = 0; i < 4; i++) {
+                    Thread.sleep(500);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            asyncDialog.dismiss();
+            adapter.notifyDataSetChanged();
+            imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
+            super.onPostExecute(result);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +95,11 @@ public class SearchBus extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
                 adapter.clear();
                 adapter.notifyDataSetChanged();
-
+                CheckTypesTask task = new CheckTypesTask();
+                task.execute();
                 Thread th =new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -64,6 +108,9 @@ public class SearchBus extends AppCompatActivity {
                 });
                 th.start();
                 try {
+                   CheckTypesTask task1 = new CheckTypesTask();
+                    task1.execute();
+                    task.execute();
                     th.join();
                 }catch(Exception e){
                     e.getMessage();
