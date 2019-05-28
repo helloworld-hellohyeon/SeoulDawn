@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -34,6 +35,8 @@ public class SearchBus extends AppCompatActivity {
     String buses[] = {"N13", "N15", "N16", "N26", "N30", "N37", "N61", "N62", "N65", "N6001", "N6002"};
     String name = null, id = null, arsID = null;
     InputMethodManager imm;
+    int check=0; //서울을 입력했는지 확인해주는 변수
+    int check1=0;  //검색결과가 있는지 확인하는 변수
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +55,18 @@ public class SearchBus extends AppCompatActivity {
         search_bus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                check=0; check1=0;
                 adapter.clear();
                 adapter.notifyDataSetChanged();
 
                 Thread th =new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        getXmlDataSearch();
+                        if(edit.getText().toString().equals("서울")){
+                            check=1;
+                        }else {
+                            getXmlDataSearch();
+                        }
                     }
                 });
                 th.start();
@@ -68,6 +75,13 @@ public class SearchBus extends AppCompatActivity {
                 }catch(Exception e){
                     e.getMessage();
                 }
+                if(check == 1){
+                    Toast.makeText(getApplicationContext(), "상세하게 적어주세요!!", Toast.LENGTH_LONG).show();
+                    edit.setText("");
+                    check=0;
+                }
+                if(check1 == 0)Toast.makeText(getApplicationContext(), "검색결과가 없습니다.", Toast.LENGTH_LONG).show();
+                Log.e("없는 검색어",""+check1);
                 adapter.notifyDataSetChanged();
                 imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
             }
@@ -191,7 +205,11 @@ public class SearchBus extends AppCompatActivity {
                                 result.put("id", arsId);
                                 Log.e("결과", result+"");
                                 adapter.addItem(result); // 정류소이름 = name, 정류소아이디 = id
+                                check1=1;
                                 //adapter.notifyDataSetChanged();
+                            }else{
+                                if(check1==1){}
+                                else{check1=0;}
                             }
                         }
                         break;
