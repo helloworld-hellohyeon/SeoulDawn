@@ -1,5 +1,6 @@
 package kr.go.seouldawn;
 
+<<<<<<< HEAD
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -10,6 +11,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.UiThread;
+=======
+import android.os.Bundle;
+>>>>>>> master
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
@@ -17,9 +21,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -38,8 +40,9 @@ public class SearchBus extends AppCompatActivity {
 
     EditText edit;
     Button search_bus;
-    ProgressDialog pb;
+
     String key = "w1LpendNML9NSRvEVJVRbZTbwm0ZK8bwkZiIoXsOwU0QZzhoQZmSDrRgr%2FEeqvNRWV%2F4NGpifpwT8LM1Hvu0dg%3D%3D";
+
     HashMap<String, String> result = new HashMap<>();
     ListView listView;
     ListviewBusAdapter adapter;
@@ -51,6 +54,7 @@ public class SearchBus extends AppCompatActivity {
     int check=0; //서울을 입력했는지 확인해주는 변수
     int check1=0;  //검색결과가 있는지 확인하는 변수
 
+<<<<<<< HEAD
     private class CheckTypesTask extends AsyncTask<Void, Void, Void> {
         ProgressDialog dialog = new ProgressDialog(SearchBus.this);
 
@@ -87,6 +91,8 @@ public class SearchBus extends AppCompatActivity {
     }
 
 
+=======
+>>>>>>> master
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,11 +115,29 @@ public class SearchBus extends AppCompatActivity {
                 adapter.clear();
                 adapter.notifyDataSetChanged();
 
+<<<<<<< HEAD
                 if(edit.getText().toString().equals("서울")){
                     check=1;
                 }else {
                     CheckTypesTask task = new CheckTypesTask();
                     task.execute();
+=======
+                Thread th =new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(edit.getText().toString().equals("서울")){
+                            check=1;
+                        }else {
+                            getXmlDataSearch();
+                        }
+                    }
+                });
+                th.start();
+                try {
+                    th.join();
+                }catch(Exception e){
+                    e.getMessage();
+>>>>>>> master
                 }
 
                 if(check == 1){
