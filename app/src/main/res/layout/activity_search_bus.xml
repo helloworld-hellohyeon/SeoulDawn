@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="103dp"
@@ -17,7 +18,7 @@
         android:background="#9087ed"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:layout_marginTop="-10dp"
+        android:layout_marginTop="-15dp"
         >
 
         <LinearLayout
@@ -40,7 +41,7 @@
                 android:textColor="#000000"
                 android:textColorHint="#757277"
                 android:textCursorDrawable="@null"
-                android:textSize="16dp" />
+                android:textSize="14dp" />
 
             <Button
                 android:id="@+id/search_station"
@@ -75,5 +76,6 @@
 
 
     </RelativeLayout>
+
 
 </LinearLayout>
