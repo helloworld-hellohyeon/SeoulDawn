@@ -3,11 +3,15 @@ package kr.go.seouldawn;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.UiThread;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -27,6 +31,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SearchBus extends AppCompatActivity {
 
@@ -45,25 +51,26 @@ public class SearchBus extends AppCompatActivity {
     int check=0; //서울을 입력했는지 확인해주는 변수
     int check1=0;  //검색결과가 있는지 확인하는 변수
 
-
     private class CheckTypesTask extends AsyncTask<Void, Void, Void> {
-
-        ProgressDialog asyncDialog = new ProgressDialog(SearchBus.this);
+        ProgressDialog dialog = new ProgressDialog(SearchBus.this);
 
         @Override
         protected void onPreExecute() {
-            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            asyncDialog.setMessage("로딩중입니다..");
-            asyncDialog.show();
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setMessage("로딩중입니다..");
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.show();
             super.onPreExecute();
         }
 
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
-                for (int i = 0; i < 4; i++) {
-                    Thread.sleep(500);
+                for (int i = 0;i < 2 ;i++) {
+                    Thread.sleep(1000);
                 }
+                getXmlDataSearch();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -72,12 +79,13 @@ public class SearchBus extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            asyncDialog.dismiss();
+            dialog.dismiss();
             adapter.notifyDataSetChanged();
             imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
             super.onPostExecute(result);
         }
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +99,7 @@ public class SearchBus extends AppCompatActivity {
 
         listView = findViewById(R.id.stationList);
         edit = findViewById(R.id.search_key);
+        edit.setInputType (InputType. TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         search_bus = findViewById(R.id.search_station);
         search_bus.setOnClickListener(new View.OnClickListener() {
@@ -99,27 +108,14 @@ public class SearchBus extends AppCompatActivity {
                 check=0; check1=0;
                 adapter.clear();
                 adapter.notifyDataSetChanged();
-                CheckTypesTask task = new CheckTypesTask();
-                task.execute();
-                Thread th =new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(edit.getText().toString().equals("서울")){
-                            check=1;
-                        }else {
-                            getXmlDataSearch();
-                        }
-                    }
-                });
-                th.start();
-                try {
-                   CheckTypesTask task1 = new CheckTypesTask();
-                    task1.execute();
+
+                if(edit.getText().toString().equals("서울")){
+                    check=1;
+                }else {
+                    CheckTypesTask task = new CheckTypesTask();
                     task.execute();
-                    th.join();
-                }catch(Exception e){
-                    e.getMessage();
                 }
+
                 if(check == 1){
                     Toast.makeText(getApplicationContext(), "상세하게 적어주세요!!", Toast.LENGTH_LONG).show();
                     edit.setText("");
@@ -142,6 +138,7 @@ public class SearchBus extends AppCompatActivity {
 
         StringBuffer buffer = new StringBuffer();
         data = new ArrayList<>();
+
 
         String str = edit.getText().toString();//EditText에 작성된 Text얻어오기
         //Log.e("받아옴", str);
@@ -166,7 +163,6 @@ public class SearchBus extends AppCompatActivity {
 
             int eventType = xpp.getEventType();
             while (eventType != XmlPullParser.END_DOCUMENT) {
-
                 switch (eventType) {
                     case XmlPullParser.START_DOCUMENT:
                         break;
