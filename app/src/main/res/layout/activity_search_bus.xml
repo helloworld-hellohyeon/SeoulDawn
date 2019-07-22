@@ -7,10 +7,15 @@
 
 
     <ImageView
+        android:id="@+id/nav"
         android:layout_width="match_parent"
-        android:layout_height="103dp"
+        android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:src="@drawable/nav" />
+        android:scaleType="centerCrop"
+        android:src="@drawable/nav"
+        android:layout_marginTop="-3dp"
+        />
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +23,7 @@
         android:background="#9087ed"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:layout_marginTop="-15dp"
+        android:layout_marginTop="-3dp"
         >
 
         <LinearLayout

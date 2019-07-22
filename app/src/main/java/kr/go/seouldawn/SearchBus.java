@@ -1,44 +1,33 @@
 package kr.go.seouldawn;
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.support.annotation.UiThread;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputFilter;
 import android.text.InputType;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.regex.Pattern;
 
 public class SearchBus extends AppCompatActivity {
 
     EditText edit;
     Button search_bus;
-    ProgressDialog pb;
     String key = "w1LpendNML9NSRvEVJVRbZTbwm0ZK8bwkZiIoXsOwU0QZzhoQZmSDrRgr%2FEeqvNRWV%2F4NGpifpwT8LM1Hvu0dg%3D%3D";
     HashMap<String, String> result = new HashMap<>();
     ListView listView;
@@ -57,7 +46,7 @@ public class SearchBus extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            dialog.setMessage("로딩중입니다..");
+            dialog.setMessage("데이터를 불러오는 중입니다.");
             dialog.setCancelable(false);
             dialog.setCanceledOnTouchOutside(false);
             dialog.show();
@@ -80,6 +69,8 @@ public class SearchBus extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             dialog.dismiss();
+            if(check1 == 0){Toast.makeText(getApplicationContext(), "검색결과가 없습니다.", Toast.LENGTH_LONG).show(); }
+            Log.e("없는 검색어",""+check1);
             adapter.notifyDataSetChanged();
             imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
             super.onPostExecute(result);
@@ -99,6 +90,7 @@ public class SearchBus extends AppCompatActivity {
 
         listView = findViewById(R.id.stationList);
         edit = findViewById(R.id.search_key);
+       edit.setFilters(new InputFilter[]{filterKor});
         edit.setInputType (InputType. TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         search_bus = findViewById(R.id.search_station);
@@ -109,7 +101,7 @@ public class SearchBus extends AppCompatActivity {
                 adapter.clear();
                 adapter.notifyDataSetChanged();
 
-                if(edit.getText().toString().equals("서울")){
+                if(edit.getText().toString().equals("서울") || edit.getText().toString().equals("초등학교")){
                     check=1;
                 }else {
                     CheckTypesTask task = new CheckTypesTask();
@@ -121,10 +113,7 @@ public class SearchBus extends AppCompatActivity {
                     edit.setText("");
                     check=0;
                 }
-                if(check1 == 0)Toast.makeText(getApplicationContext(), "검색결과가 없습니다.", Toast.LENGTH_LONG).show();
-                Log.e("없는 검색어",""+check1);
-                adapter.notifyDataSetChanged();
-                imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
+
             }
         });
         listView.setAdapter(null);
@@ -132,6 +121,16 @@ public class SearchBus extends AppCompatActivity {
 
         listView.setAdapter(adapter);
     }
+
+   public InputFilter filterKor = new InputFilter() {
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            Pattern ps = Pattern.compile("^[ㄱ-ㅎ가-흐]+$");
+            if (!ps.matcher(source).matches()) {
+                return "";
+            }
+            return null;
+        }
+    };
 
 
     void getXmlDataSearch() {
@@ -270,4 +269,10 @@ public class SearchBus extends AppCompatActivity {
         }
 
     } // getBusName
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

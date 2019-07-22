@@ -3,11 +3,15 @@ package kr.go.seouldawn;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.widget.ImageButton;
 
 import java.util.ArrayList;
@@ -130,10 +134,7 @@ public class StorePageList extends AppCompatActivity implements View.OnClickList
                 fragment4.setArguments(bundle4);
                 transaction.replace(R.id.fragment_container, fragment4).commit();
                 break;
-
-
     }
-
 
 }
 
@@ -141,6 +142,9 @@ public class StorePageList extends AppCompatActivity implements View.OnClickList
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+//        StorePage.mWebView.clearMatches();
     }
+
+
 }
 
